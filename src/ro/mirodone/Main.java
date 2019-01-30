@@ -1,8 +1,13 @@
 package ro.mirodone;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Main {
 
-    private static Object lock = new Object();
+   // private static Object lock = new Object();
+
+    private static ReentrantLock lock = new ReentrantLock(true);
+    //fair lock guarantees the first come first served ordering for getting the lock
 
     public static void main(String[] args) {
 
@@ -40,12 +45,19 @@ public class Main {
         public void run() {
 
             for (int i = 0; i < 100; i++) {
-                synchronized (lock) {
+
+                lock.lock();
+                try {
                     System.out.format(threadColor + "%s: runCount = %d\n", Thread.currentThread().getName(), runCount++);
-                    //execute critical section of the code
+                }finally {
+                    lock.unlock();
                 }
 
-                // System.out.format(threadColor + "%s: runCount = %d\n", Thread.currentThread().getName(), runCount++);
+
+/*                synchronized (lock) {
+                    System.out.format(threadColor + "%s: runCount = %d\n", Thread.currentThread().getName(), runCount++);
+                    //execute critical section of the code
+                }*/
             }
 
         }
